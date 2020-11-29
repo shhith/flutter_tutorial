@@ -32,6 +32,37 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
   void _pushSaved() {
+    // Navigatorのstackにページをpushする
+    Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          // NEW lines from here...
+          builder: (BuildContext context) {
+            // お気に入りに追加済のデータを取得し、PascalCaseで表示
+            final tiles = _saved.map(
+                  (WordPair pair) {
+                return ListTile(
+                  title: Text(
+                    pair.asPascalCase,
+                    style: _biggerFont,
+                  ),
+                );
+              },
+            );
+            // お気に入りのリストが入っている変数を宣言し、toListでList型の変数に変換
+            final divided = ListTile.divideTiles(
+              context: context,
+              tiles: tiles,
+            ).toList();
+
+            return Scaffold(
+              appBar: AppBar(
+                title: Text('Saved Suggestions'),
+              ),
+              body: ListView(children: divided),
+            );
+          },
+        ),
+    );
   }
   Widget _buildSuggestions() {
     return ListView.builder(
