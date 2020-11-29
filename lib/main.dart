@@ -9,7 +9,10 @@ void main() {
 class _RandomWordsState extends State<RandomWords> {
   @override
   // buildの外で定義しないとエラーが出る
+  // Listは重複可能なデータセット
+  // Setは重複のないデータセット
   final _suggestions = <WordPair>[];
+  final _saved = Set<WordPair>();
   final _biggerFont = TextStyle(fontSize: 18.0);
   // buildメソッドが呼ばれる
   Widget build(BuildContext context) {
@@ -20,9 +23,15 @@ class _RandomWordsState extends State<RandomWords> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
+        actions: [
+          // onPressed: アイコンがタップされたときに_pushSaved(関数)を呼び出す
+          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+        ],
       ),
       body: _buildSuggestions(),
     );
+  }
+  void _pushSaved() {
   }
   Widget _buildSuggestions() {
     return ListView.builder(
@@ -38,11 +47,27 @@ class _RandomWordsState extends State<RandomWords> {
         });
   }
   Widget _buildRow(WordPair pair) {
+    // お気に入りに追加されているかどうか。
+    final alreadySaved = _saved.contains(pair);
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+      trailing: Icon(
+        // もし保存されていたら、アイコンに色を付ける。true : false
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if (alreadySaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
+          }
+        });
+      },
     );
   }
 }
